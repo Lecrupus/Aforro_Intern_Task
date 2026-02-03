@@ -23,12 +23,14 @@ Start all services (Django app, PostgreSQL, Redis, Celery worker) with a single 
 
 ```bash
 docker compose up --build
+```
 
 ### 2. Seed Test Data
 Populate the database with sample stores, products, and inventory:
 
 ```bash
 docker compose exec web python manage.py seed_data
+```
 
 ## Features & API Documentation
 
@@ -61,6 +63,7 @@ Prefix-based autocomplete suggestions with **Redis-backed throttling** to preven
 **Example:**
 ```http
 GET /api/search/suggest/?q=Pro
+```
 
 ### Feature 3: Atomic Order Processing
 Handles high-concurrency ordering using `transaction.atomic()` and `select_for_update()`. This locks the relevant rows during the transaction, preventing race conditions (e.g., preventing the same item from being sold to two different users simultaneously).
@@ -76,12 +79,14 @@ Handles high-concurrency ordering using `transaction.atomic()` and `select_for_u
 curl -X POST http://localhost:8000/orders/ \
 -H "Content-Type: application/json" \
 -d '{"store": 1, "items": [{"product_id": 589, "quantity": 1}]}'
+```
 
 **PowerShell (Windows):**
 ```powershell
 Invoke-RestMethod -Uri "http://localhost:8000/orders/" -Method Post `
 -ContentType "application/json" `
 -Body '{"store": 1, "items": [{"product_id": 589, "quantity": 1}]}'
+```
 
 **Result:** Order status `CONFIRMED`, inventory deducted.
 
@@ -98,6 +103,7 @@ Payload requesting more items than available:
     }
   ]
 }
+```
 
 **Result:** Order status `REJECTED`, inventory remains unchanged.
 
@@ -109,11 +115,13 @@ Payload requesting more items than available:
 Sorted newest to oldest.
 ```http
 GET /stores/1/orders/
+```
 
 **View Inventory**
 Sorted alphabetically by product title.
 ```http
 GET /stores/1/inventory/
+```
 
 ### Feature 5: Asynchronous Tasks with Celery
 Heavy operations, such as sending order confirmation emails, are handled asynchronously to ensure fast API response times.
@@ -125,6 +133,7 @@ Heavy operations, such as sending order confirmation emails, are handled asynchr
 1. Open a terminal and tail the worker logs:
    ```bash
    docker compose logs -f worker
+   ```
 2. Place a successful order via the API.
 3. The API will respond instantly with `HTTP 201`.
 4. The worker logs will show the email task being processed and sent after a short delay.
@@ -137,3 +146,4 @@ Run the automated test suite inside the Docker container:
 
 ```bash
 docker compose exec web python manage.py test
+```
